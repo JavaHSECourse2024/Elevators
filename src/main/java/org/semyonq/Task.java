@@ -1,14 +1,12 @@
 package org.semyonq;
 
-import java.util.Random;
-
-public class User implements Comparable<User> {
+public class Task implements Comparable<Task> {
     private final int fromFloor;
     private final Direction direction;
 
     private int destFloor;
 
-    public User(int fromFloor, Direction direction) {
+    public Task(int fromFloor, Direction direction) {
         if(fromFloor < Config.MIN_FLOOR || fromFloor > Config.MAX_FLOOR)
             throw new RuntimeException("Bad value for fromFloor");
         if(fromFloor == Config.MAX_FLOOR && direction == Direction.UP)
@@ -20,7 +18,7 @@ public class User implements Comparable<User> {
         this.direction = direction;
     }
 
-    public User(int fromFloor) {
+    public Task(int fromFloor) {
         if(fromFloor < Config.MIN_FLOOR || fromFloor > Config.MAX_FLOOR)
             throw new RuntimeException("Bad value for fromFloor");
         this.fromFloor = fromFloor;
@@ -35,10 +33,10 @@ public class User implements Comparable<User> {
 
     @Override
     public String toString() {
-        return String.format("User(FromFloor = %d, Dir = %s)", fromFloor, direction.toString());
+        return String.format("Task(FromFloor = %d, Dir = %s)", fromFloor, direction.toString());
     }
 
-    public User() {
+    public Task() {
         this(Config.getRandomFloor());
     }
 
@@ -46,6 +44,7 @@ public class User implements Comparable<User> {
         do {
             destFloor = Config.getRandomFloor();
         } while (destFloor == fromFloor);
+        System.out.println("Destination floor = " + destFloor);
     }
 
     public int getFromFloor() {
@@ -61,7 +60,7 @@ public class User implements Comparable<User> {
     }
 
     @Override
-    public int compareTo(User other) {
+    public int compareTo(Task other) {
         return Integer.compare(this.destFloor, other.destFloor);
     }
 }

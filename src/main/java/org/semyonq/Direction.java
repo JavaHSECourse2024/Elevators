@@ -12,6 +12,6 @@ public enum Direction {
     private static final Random RANDOM = new Random();
 
     public static Direction getRandom() {
-        return VALUES[RANDOM.nextInt(SIZE)];
+        return VALUES[RANDOM.nextInt(SIZE - 1) + 1];
     }
 }

@@ -1,10 +1,10 @@
 package org.semyonq;
 
-public class UserGenerator extends Thread {
+public class TaskGenerator extends Thread {
 
     WorkArbitrage workArbitrage;
 
-    public UserGenerator(WorkArbitrage workArbitrage) {
+    public TaskGenerator(WorkArbitrage workArbitrage) {
         this.workArbitrage = workArbitrage;
     }
 
@@ -12,11 +12,10 @@ public class UserGenerator extends Thread {
     public void run() {
         while (true) {
             try {
-                long waitTime = Config.getRandomInterval();
-                Thread.sleep(waitTime * 1000);
-                User user = new User();
-                System.out.println("Generated user: " + user);
-                this.workArbitrage.addTask(user);
+                Thread.sleep(Config.getRandomInterval());
+                Task task = new Task();
+                System.out.println("Generated task: " + task);
+                this.workArbitrage.addTask(task);
             } catch (InterruptedException e) {
                 System.out.println("Processor interrupted. Exiting...");
                 Thread.currentThread().interrupt();

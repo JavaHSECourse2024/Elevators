@@ -5,14 +5,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WorkArbitrage extends Thread {
 
-    private final ConcurrentLinkedQueue<User> tasks = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Task> tasks = new ConcurrentLinkedQueue<>();
     private final ArrayList<Elevator> elevators;
 
     public WorkArbitrage(ArrayList<Elevator> els) {
         elevators = els;
     }
 
-    public void addTask(User newTask) {
+    public void addTask(Task newTask) {
         tasks.add(newTask);
         System.out.println("Task added: " + newTask);
     }
@@ -20,19 +20,29 @@ public class WorkArbitrage extends Thread {
     @Override
     public void run() {
         while (true) {
-            User user = tasks.poll();
-            if(user == null) continue;
-            setTaskToElevator(user);
+            Task task = tasks.poll();
+            if(task == null) continue;
+            try {
+                setTaskToElevator(task);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private synchronized void setTaskToElevator(User user) {
-        System.out.println("Got user, do smth...\n\n");
+    private synchronized void setTaskToElevator(Task task) throws InterruptedException {
+        System.out.println("Got task, do smth...\n\n");
         Elevator bestEl = null;
-        int closestFloor = Config.MAX_FLOOR - Config.MIN_FLOOR;
+        int closestFloor = Config.MAX_FLOOR - Config.MIN_FLOOR + 1;
         for(Elevator el : elevators) {
-            if (el.getDirection() == Direction.NONE || el.getDirection() == user.getDirection()) {
-                int floorDiff = Math.abs(el.getCurrentFloor() - user.getFromFloor());
+            if (el.getDirection() == Direction.NONE ||
+                    (el.getDirection() == task.getDirection() &&
+                        ((task.getDirection() == Direction.DOWN && el.getCurrentFloor() >= task.getFromFloor()) ||
+                            (task.getDirection() == Direction.UP && el.getCurrentFloor() <= task.getFromFloor())
+                        )
+                    )
+            ) {
+                int floorDiff = Math.abs(el.getCurrentFloor() - task.getFromFloor());
                 if(floorDiff < closestFloor) {
                     closestFloor = floorDiff;
                     bestEl = el;
@@ -41,11 +51,12 @@ public class WorkArbitrage extends Thread {
         }
 
         if(bestEl != null) {
-            bestEl.addTask(user);
+            bestEl.addTask(task);
             return;
         }
 
-        System.out.println("No available elevators. Return user to queue: " + user);
-        addTask(user);
+        System.out.println("No available elevators. Return task to queue: " + task);
+        addTask(task);
+        Thread.sleep(Config.SMALL_INTERVAl * 1000);
     }
 }

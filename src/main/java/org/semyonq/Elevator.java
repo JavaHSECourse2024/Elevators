@@ -5,7 +5,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public class Elevator {
     // Очередь вызовов сортированная, по этажам. Гарантируется, что в очереди не может быть этажа ниже текущего.
-    private PriorityBlockingQueue<User> queue = new PriorityBlockingQueue<>();
+    private PriorityBlockingQueue<Task> queue = new PriorityBlockingQueue<>();
 
     private int lastFloor = Config.MIN_FLOOR;
     private int currentFloor = Config.MIN_FLOOR;
@@ -13,9 +13,14 @@ public class Elevator {
 
     private final int number;
 
-    public void addTask(User user) {
-        queue.add(user);
-        System.out.println("Add to " + this + " " + user);
+    private final int EPS = 1;
+
+    private double tempSleep = 0;
+
+    public void addTask(Task task) {
+        dir = task.getDirection();
+        queue.add(task);
+        System.out.println("Add to " + this + " " + task);
     }
 
     @Override
@@ -39,19 +44,49 @@ public class Elevator {
         this.y = y;
     }
 
-    public void move(double delta) {
-        if(dir == Direction.NONE)
-            return;
+    private int getDestY(int floor) {
+        return Render.convertFloorToY(floor);
+    }
 
-        if (dir == Direction.UP && y > 0) {
-            y -= delta * Config.SPEED;
-        } else if (dir == Direction.DOWN && y < Config.MAX_FLOOR * 40) {
-            y += delta * Config.SPEED;
+    private void getNextTask() {
+        boolean anyChanges = false;
+        for(Task task : queue) {
+            if(task.getFromFloor() == currentFloor) {
+                anyChanges = true;
+                if(task.getDirection() != Direction.NONE) {
+                    task.genDestFloor();
+                    queue.add(new Task(task.getDestFloor(), Direction.NONE));
+                }
+                queue.remove(task);
+            }
         }
+        if(anyChanges)
+            tempSleep = Config.SMALL_INTERVAl;
+        if(queue.isEmpty()) {
+            dir = Direction.NONE;
+            System.out.println("Finish task queue");
+        }
+    }
 
-        // Меняем направление движения, если лифт достиг верхнего или нижнего этажа
-        if (y <= 0 || y >= Config.MAX_FLOOR * 40) {
-            dir = (dir == Direction.UP) ? Direction.DOWN : Direction.UP;
+    public void move(double delta) {
+        if(dir == Direction.NONE || tempSleep > 0) {
+            tempSleep -= delta;
+            return;
+        }
+        int toY = getDestY(queue.peek().getFromFloor());
+        if(Math.abs(toY - y) < EPS) {
+            getNextTask();
+        }
+        int sign = Integer.signum((int) (toY - y));
+        y = y + sign * (delta * Config.SPEED);
+
+        if(getDestY(currentFloor) >= y && sign < 0) {
+            currentFloor += 1;
+            System.out.println("Current floor is " + currentFloor);
+        }
+        else if(getDestY(currentFloor) <= y && sign > 0) {
+            currentFloor -= 1;
+            System.out.println("Current floor is " + currentFloor);
         }
     }
 

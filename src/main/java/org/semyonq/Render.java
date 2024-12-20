@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class Render extends JPanel implements Runnable {
     private final ArrayList<Elevator> elevators;
+    private static int[] floorY = new int[Config.MAX_FLOOR - Config.MIN_FLOOR + 1];
 
     private final long SEC = 1_000_000_000;
     private final long FRAME_TIME = SEC / Config.FPS; // 1 sec in nano / 60 frames
@@ -16,8 +17,12 @@ public class Render extends JPanel implements Runnable {
         elevators = els;
         final int startY = Config.SCREEN_HEIGHT - (Config.ELEVATOR_HEIGHT + Config.PADDING);
         for(int i = 0; i < Config.N_WORKERS; i++)
-            elevators.add(new Elevator(i + 1,(i+1)*Config.ELEVATOR_PADDING + Config.ELEVATOR_WIDTH * i, startY));
+            elevators.add(new Elevator(i + 1, (i + 1) * Config.ELEVATOR_PADDING + Config.ELEVATOR_WIDTH * i, startY));
         setPreferredSize(new Dimension(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT));
+    }
+
+    public static int convertFloorToY(int floor) {
+        return floorY[floor - 1];
     }
 
     @Override
@@ -57,7 +62,9 @@ public class Render extends JPanel implements Runnable {
         int floors_num = Config.MAX_FLOOR - Config.MIN_FLOOR;
         int lineInterval = Config.SCREEN_HEIGHT / (floors_num + 1);
         for (int i = 0; i <= floors_num; i++) {
-            g.fillRect(Config.PADDING, Config.SCREEN_HEIGHT - (i * lineInterval + Config.PADDING), Config.SCREEN_WIDTH - Config.PADDING * 2, 2);  // Horizontal stripes
+            int startY = Config.SCREEN_HEIGHT - (i * lineInterval + Config.PADDING);
+            floorY[i] = startY - Config.ELEVATOR_HEIGHT + 1;
+            g.fillRect(Config.PADDING, startY, Config.SCREEN_WIDTH - Config.PADDING * 2, 2);  // Horizontal stripes
         }
 
         for(Elevator el : elevators)

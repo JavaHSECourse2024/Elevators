@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Main {
     private static final ArrayList<Elevator> elevators = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         System.out.println("Hello world!");
         JFrame frame = new JFrame("Elevator Simulation");
         Render render = new Render(elevators);
@@ -19,6 +19,9 @@ public class Main {
         new Thread(render).start();
         WorkArbitrage workArbitrage = new WorkArbitrage(elevators);
         workArbitrage.start();
-        new UserGenerator(workArbitrage).start();
+//        workArbitrage.addTask(new Task());
+//        Thread.sleep(4000);
+//        workArbitrage.addTask(new Task(1));
+        new TaskGenerator(workArbitrage).start();
     }
 }
