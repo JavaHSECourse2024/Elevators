@@ -3,6 +3,7 @@ package org.semyonq;
 import java.util.Random;
 
 public enum Direction {
+    NONE,
     UP,
     DOWN;
 

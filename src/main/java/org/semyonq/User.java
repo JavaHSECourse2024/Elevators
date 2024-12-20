@@ -2,10 +2,9 @@ package org.semyonq;
 
 import java.util.Random;
 
-public class User {
+public class User implements Comparable<User> {
     private final int fromFloor;
     private final Direction direction;
-    private final static Random RANDOM = new Random();
 
     private int destFloor;
 
@@ -34,13 +33,18 @@ public class User {
 
     }
 
+    @Override
+    public String toString() {
+        return String.format("User(FromFloor = %d, Dir = %s)", fromFloor, direction.toString());
+    }
+
     public User() {
-        this(RANDOM.nextInt(Config.MAX_FLOOR) + Config.MIN_FLOOR);
+        this(Config.getRandomFloor());
     }
 
     public void genDestFloor() {
         do {
-            destFloor = RANDOM.nextInt(Config.MAX_FLOOR) + Config.MIN_FLOOR; // Генерируем число от 1 до 13
+            destFloor = Config.getRandomFloor();
         } while (destFloor == fromFloor);
     }
 
@@ -54,5 +58,10 @@ public class User {
 
     public int getDestFloor() {
         return destFloor;
+    }
+
+    @Override
+    public int compareTo(User other) {
+        return Integer.compare(this.destFloor, other.destFloor);
     }
 }

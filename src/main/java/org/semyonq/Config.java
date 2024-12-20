@@ -1,10 +1,24 @@
 package org.semyonq;
 
+import java.util.Random;
+
 public class Config {
+    private final static Random RANDOM = new Random();
+
     public static final int MAX_FLOOR = 10;
     public static final int MIN_FLOOR = 1;
 
     public static final int N_WORKERS = 3;
+    public static final int MIN_INTERVAL = 5;
+    public static final int MAX_INTERVAL = 10;
+
+    public static int getRandomFloor() {
+        return Config.MIN_FLOOR + RANDOM.nextInt(Config.MAX_FLOOR - Config.MIN_FLOOR + 1);
+    }
+
+    public static int getRandomInterval() {
+        return Config.MIN_INTERVAL + RANDOM.nextInt(Config.MAX_INTERVAL - Config.MIN_INTERVAL + 1);
+    }
 
     public static final int FPS = 60;
     public static final double SPEED = 50;

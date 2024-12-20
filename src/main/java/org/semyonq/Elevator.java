@@ -3,23 +3,46 @@ package org.semyonq;
 import java.awt.*;
 import java.util.concurrent.PriorityBlockingQueue;
 
-public class Elevator implements Runnable {
+public class Elevator {
     // Очередь вызовов сортированная, по этажам. Гарантируется, что в очереди не может быть этажа ниже текущего.
-    private PriorityBlockingQueue<Integer> queue = new PriorityBlockingQueue<>();
+    private PriorityBlockingQueue<User> queue = new PriorityBlockingQueue<>();
 
-    private int last_floor = Config.MIN_FLOOR;
-    private int current_floor = Config.MIN_FLOOR;
-    private Direction dir = Direction.UP;
+    private int lastFloor = Config.MIN_FLOOR;
+    private int currentFloor = Config.MIN_FLOOR;
+    private Direction dir = Direction.NONE;
+
+    private final int number;
+
+    public void addTask(User user) {
+        queue.add(user);
+        System.out.println("Add to " + this + " " + user);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Elevator %d", number);
+    }
+
+    public Direction getDirection() {
+        return dir;
+    }
+
+    public int getCurrentFloor() {
+        return currentFloor;
+    }
 
     private double x, y;
 
-    public Elevator(double x, double y) {
+    public Elevator(int number, double x, double y) {
+        this.number = number;
         this.x = x;
         this.y = y;
     }
 
     public void move(double delta) {
-        System.out.println(delta);
+        if(dir == Direction.NONE)
+            return;
+
         if (dir == Direction.UP && y > 0) {
             y -= delta * Config.SPEED;
         } else if (dir == Direction.DOWN && y < Config.MAX_FLOOR * 40) {
@@ -35,10 +58,5 @@ public class Elevator implements Runnable {
     public void paint(Graphics g) {
         g.setColor(Color.BLUE);
         g.fillRect((int) x, (int) y, Config.ELEVATOR_WIDTH, Config.ELEVATOR_HEIGHT);  // Рисуем лифт (прямоугольник)
-    }
-
-    @Override
-    public void run() {
-        System.out.println("Run elevator");
     }
 }
