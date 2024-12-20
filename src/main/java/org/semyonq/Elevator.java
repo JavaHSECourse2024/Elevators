@@ -1,19 +1,19 @@
 package org.semyonq;
 
 import java.awt.*;
+import java.util.PriorityQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class Elevator {
     // Очередь вызовов сортированная, по этажам. Гарантируется, что в очереди не может быть этажа ниже текущего.
     private PriorityBlockingQueue<Task> queue = new PriorityBlockingQueue<>();
 
-    private int lastFloor = Config.MIN_FLOOR;
-    private int currentFloor = Config.MIN_FLOOR;
+    private int currentFloor = Config.MIN_FLOOR - 1;
     private Direction dir = Direction.NONE;
 
     private final int number;
 
-    private final int EPS = 1;
+    private final double EPS = 1.5;
 
     private double tempSleep = 0;
 
@@ -50,22 +50,29 @@ public class Elevator {
 
     private void getNextTask() {
         boolean anyChanges = false;
-        for(Task task : queue) {
+        Task[] tasks_copy = new Task[queue.size()];
+        queue.toArray(tasks_copy);
+
+        for(Task task : tasks_copy) {
             if(task.getFromFloor() == currentFloor) {
                 anyChanges = true;
+                queue.remove(task);
                 if(task.getDirection() != Direction.NONE) {
                     task.genDestFloor();
                     queue.add(new Task(task.getDestFloor(), Direction.NONE));
                 }
-                queue.remove(task);
             }
         }
         if(anyChanges)
             tempSleep = Config.SMALL_INTERVAl;
         if(queue.isEmpty()) {
             dir = Direction.NONE;
-            System.out.println("Finish task queue");
+            System.out.println(this + " finished task queue");
         }
+    }
+
+    private boolean circleY(double y1) {
+        return Math.abs(y1 - y) < EPS;
     }
 
     public void move(double delta) {
@@ -74,19 +81,21 @@ public class Elevator {
             return;
         }
         int toY = getDestY(queue.peek().getFromFloor());
-        if(Math.abs(toY - y) < EPS) {
+        if(circleY(toY)) {
             getNextTask();
+            return;
         }
         int sign = Integer.signum((int) (toY - y));
         y = y + sign * (delta * Config.SPEED);
 
-        if(getDestY(currentFloor) >= y && sign < 0) {
+        System.out.println(getDestY(currentFloor) - y + " " + circleY(getDestY(currentFloor)));
+        if(circleY(getDestY(currentFloor)) && sign < 0) {
             currentFloor += 1;
-            System.out.println("Current floor is " + currentFloor);
+            System.out.println(this + "'s current floor is " + currentFloor);
         }
-        else if(getDestY(currentFloor) <= y && sign > 0) {
+        else if(circleY(getDestY(currentFloor)) && sign > 0) {
             currentFloor -= 1;
-            System.out.println("Current floor is " + currentFloor);
+            System.out.println(this + "'s current floor is " + currentFloor);
         }
     }
 

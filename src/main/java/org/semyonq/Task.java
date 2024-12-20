@@ -44,7 +44,7 @@ public class Task implements Comparable<Task> {
         do {
             destFloor = Config.getRandomFloor();
         } while (destFloor == fromFloor);
-        System.out.println("Destination floor = " + destFloor);
+        System.out.println(this + "'s destination floor = " + destFloor);
     }
 
     public int getFromFloor() {

@@ -14,7 +14,6 @@ public class WorkArbitrage extends Thread {
 
     public void addTask(Task newTask) {
         tasks.add(newTask);
-        System.out.println("Task added: " + newTask);
     }
 
     @Override
@@ -31,7 +30,6 @@ public class WorkArbitrage extends Thread {
     }
 
     private synchronized void setTaskToElevator(Task task) throws InterruptedException {
-        System.out.println("Got task, do smth...\n\n");
         Elevator bestEl = null;
         int closestFloor = Config.MAX_FLOOR - Config.MIN_FLOOR + 1;
         for(Elevator el : elevators) {
@@ -55,7 +53,7 @@ public class WorkArbitrage extends Thread {
             return;
         }
 
-        System.out.println("No available elevators. Return task to queue: " + task);
+//        System.out.println("No available elevators. Return task to queue: " + task);
         addTask(task);
         Thread.sleep(Config.SMALL_INTERVAl * 1000);
     }

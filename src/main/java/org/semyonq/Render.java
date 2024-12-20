@@ -22,7 +22,8 @@ public class Render extends JPanel implements Runnable {
     }
 
     public static int convertFloorToY(int floor) {
-        return floorY[floor - 1];
+        floor -= Config.MIN_FLOOR;
+        return floorY[floor];
     }
 
     @Override
@@ -59,9 +60,9 @@ public class Render extends JPanel implements Runnable {
         super.paintComponent(g);
 
         g.setColor(Color.GRAY);
-        int floors_num = Config.MAX_FLOOR - Config.MIN_FLOOR;
-        int lineInterval = Config.SCREEN_HEIGHT / (floors_num + 1);
-        for (int i = 0; i <= floors_num; i++) {
+        int floors_num = Config.MAX_FLOOR - Config.MIN_FLOOR + 1;
+        int lineInterval = Config.SCREEN_HEIGHT / floors_num;
+        for (int i = 0; i < floors_num; i++) {
             int startY = Config.SCREEN_HEIGHT - (i * lineInterval + Config.PADDING);
             floorY[i] = startY - Config.ELEVATOR_HEIGHT + 1;
             g.fillRect(Config.PADDING, startY, Config.SCREEN_WIDTH - Config.PADDING * 2, 2);  // Horizontal stripes

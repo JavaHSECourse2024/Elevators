@@ -19,9 +19,9 @@ public class Main {
         new Thread(render).start();
         WorkArbitrage workArbitrage = new WorkArbitrage(elevators);
         workArbitrage.start();
-//        workArbitrage.addTask(new Task());
-//        Thread.sleep(4000);
-//        workArbitrage.addTask(new Task(1));
-        new TaskGenerator(workArbitrage).start();
+//        workArbitrage.addTask(new Task(1)); // Add random task
+//        Thread.sleep(4000); // Some sleep
+//        workArbitrage.addTask(new Task(1)); // Add task with certain floor
+        new TaskGenerator(workArbitrage).start(); // Automated task generation
     }
 }
