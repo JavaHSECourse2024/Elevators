@@ -58,6 +58,7 @@ public class Elevator {
             if(task.getFromFloor() == currentFloor) {
                 anyChanges = true;
                 queue.remove(task);
+                WorkArbitrage.downTaskCount(task.getDirection(), task.getFromFloor());
                 if(task.getDirection() != Direction.NONE) {
                     activeTasks++;
                     task.genDestFloor();

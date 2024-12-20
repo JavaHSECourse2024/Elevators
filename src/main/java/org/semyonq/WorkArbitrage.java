@@ -8,12 +8,41 @@ public class WorkArbitrage extends Thread {
     private final ConcurrentLinkedQueue<Task> tasks = new ConcurrentLinkedQueue<>();
     private final ArrayList<Elevator> elevators;
 
+    private static final int[] upTasks = new int[Config.MAX_FLOOR - Config.MIN_FLOOR + 1];
+    private static final int[] downTasks = new int[Config.MAX_FLOOR - Config.MIN_FLOOR + 1];
+
+    public static int getCountTasks(Direction dir, int floor_idx) {
+        if(dir == Direction.UP) {
+            return upTasks[floor_idx];
+        } else if (dir == Direction.DOWN) {
+            return downTasks[floor_idx];
+        }
+        return 0;
+    }
+
+    public static synchronized void upTaskCount(Direction dir, int floor) {
+        if(dir == Direction.UP) {
+            upTasks[floor - Config.MIN_FLOOR]++;
+        } else if (dir == Direction.DOWN) {
+            downTasks[floor - Config.MIN_FLOOR]++;
+        }
+    }
+
+    public static synchronized void downTaskCount(Direction dir, int floor) {
+        if(dir == Direction.UP) {
+            upTasks[floor - Config.MIN_FLOOR]--;
+        } else if (dir == Direction.DOWN) {
+            downTasks[floor - Config.MIN_FLOOR]--;
+        }
+    }
+
     public WorkArbitrage(ArrayList<Elevator> els) {
         elevators = els;
     }
 
     public void addTask(Task newTask) {
         tasks.add(newTask);
+        upTaskCount(newTask.getDirection(), newTask.getFromFloor());
     }
 
     @Override
@@ -54,7 +83,7 @@ public class WorkArbitrage extends Thread {
         }
 
 //        System.out.println("No available elevators. Return task to queue: " + task);
-        addTask(task);
+        tasks.add(task);
         Thread.sleep(Config.SMALL_INTERVAl * 1000);
     }
 }
