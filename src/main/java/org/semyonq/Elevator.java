@@ -16,11 +16,12 @@ public class Elevator {
     private final double EPS = 1.5;
 
     private double tempSleep = 0;
+    int activeTasks = 0;
 
     public void addTask(Task task) {
         dir = task.getDirection();
         queue.add(task);
-        System.out.println("Add to " + this + " " + task);
+        System.out.println("Add to " + this + " " + task + "\n");
     }
 
     @Override
@@ -58,16 +59,19 @@ public class Elevator {
                 anyChanges = true;
                 queue.remove(task);
                 if(task.getDirection() != Direction.NONE) {
+                    activeTasks++;
                     task.genDestFloor();
                     queue.add(new Task(task.getDestFloor(), Direction.NONE));
                 }
+                else
+                    activeTasks--;
             }
         }
         if(anyChanges)
             tempSleep = Config.SMALL_INTERVAl;
         if(queue.isEmpty()) {
             dir = Direction.NONE;
-            System.out.println(this + " finished task queue");
+            System.out.println(this + " finished task queue\n");
         }
     }
 
@@ -89,17 +93,29 @@ public class Elevator {
         y = y + sign * (delta * Config.SPEED);
 
         if(!circleY(getDestY(currentFloor)) && getDestY(currentFloor) > y && sign < 0) {
-            currentFloor += 1;
-            System.out.println(this + "'s current floor is " + currentFloor);
+            currentFloor++;
+//            System.out.println(this + "'s current floor is " + currentFloor);
         }
         else if(!circleY(getDestY(currentFloor)) && getDestY(currentFloor) < y && sign > 0) {
-            currentFloor -= 1;
-            System.out.println(this + "'s current floor is " + currentFloor);
+            currentFloor--;
+//            System.out.println(this + "'s current floor is " + currentFloor);
         }
     }
 
     public void paint(Graphics g) {
         g.setColor(Color.BLUE);
         g.fillRect((int) x, (int) y, Config.ELEVATOR_WIDTH, Config.ELEVATOR_HEIGHT);  // Рисуем лифт (прямоугольник)
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Вычисляем позицию текста в центре лифта
+        FontMetrics fm = g.getFontMetrics();
+        String countText = String.valueOf(activeTasks);
+        int textWidth = fm.stringWidth(countText);
+        int textHeight = fm.getAscent();
+        int textX = (int) (x + (Config.ELEVATOR_WIDTH - textWidth) / 2);
+        int textY = (int) (y + (Config.ELEVATOR_HEIGHT + textHeight) / 2);
+
+        g.drawString(countText, textX, textY);
     }
 }

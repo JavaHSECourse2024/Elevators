@@ -58,7 +58,7 @@ public class Render extends JPanel implements Runnable {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        g.setFont(new Font("Arial", Font.BOLD, 14));
         g.setColor(Color.GRAY);
         int floors_num = Config.MAX_FLOOR - Config.MIN_FLOOR + 1;
         int lineInterval = Config.SCREEN_HEIGHT / floors_num;
@@ -66,6 +66,7 @@ public class Render extends JPanel implements Runnable {
             int startY = Config.SCREEN_HEIGHT - (i * lineInterval + Config.PADDING);
             floorY[i] = startY - Config.ELEVATOR_HEIGHT + 1;
             g.fillRect(Config.PADDING, startY, Config.SCREEN_WIDTH - Config.PADDING * 2, 2);  // Horizontal stripes
+            g.drawString(String.valueOf(i + 1), Config.PADDING, startY - 5);
         }
 
         for(Elevator el : elevators)
