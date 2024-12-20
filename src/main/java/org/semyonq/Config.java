@@ -5,12 +5,12 @@ import java.util.Random;
 public class Config {
     private final static Random RANDOM = new Random();
 
-    public static final int MAX_FLOOR = 5;
+    public static final int MAX_FLOOR = 10;
     public static final int MIN_FLOOR = 1;
 
-    public static final int N_WORKERS = 1;
+    public static final int N_WORKERS = 3;
     public static final int MIN_INTERVAL = 1;
-    public static final int MAX_INTERVAL = 5;
+    public static final int MAX_INTERVAL = 3;
     public static final int SMALL_INTERVAl = 1;
 
     public static final int FPS = 60;
