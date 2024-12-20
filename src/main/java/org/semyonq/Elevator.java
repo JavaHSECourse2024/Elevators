@@ -8,7 +8,7 @@ public class Elevator {
     // Очередь вызовов сортированная, по этажам. Гарантируется, что в очереди не может быть этажа ниже текущего.
     private PriorityBlockingQueue<Task> queue = new PriorityBlockingQueue<>();
 
-    private int currentFloor = Config.MIN_FLOOR - 1;
+    private int currentFloor = Config.MIN_FLOOR;
     private Direction dir = Direction.NONE;
 
     private final int number;
@@ -88,12 +88,11 @@ public class Elevator {
         int sign = Integer.signum((int) (toY - y));
         y = y + sign * (delta * Config.SPEED);
 
-        System.out.println(getDestY(currentFloor) - y + " " + circleY(getDestY(currentFloor)));
-        if(circleY(getDestY(currentFloor)) && sign < 0) {
+        if(!circleY(getDestY(currentFloor)) && getDestY(currentFloor) > y && sign < 0) {
             currentFloor += 1;
             System.out.println(this + "'s current floor is " + currentFloor);
         }
-        else if(circleY(getDestY(currentFloor)) && sign > 0) {
+        else if(!circleY(getDestY(currentFloor)) && getDestY(currentFloor) < y && sign > 0) {
             currentFloor -= 1;
             System.out.println(this + "'s current floor is " + currentFloor);
         }
