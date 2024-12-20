@@ -70,7 +70,7 @@ public class Render extends JPanel implements Runnable {
             g.fillRect(Config.PADDING, startY, Config.SCREEN_WIDTH - Config.PADDING * 2, 2);  // Horizontal stripes
 
             g.setFont(new Font("Arial", Font.BOLD, 14));
-            g.drawString(String.valueOf(i + 1), Config.PADDING, startY - 5);
+            g.drawString(String.valueOf(i + Config.MIN_FLOOR), Config.PADDING, startY - 5);
             g.setFont(new Font("Arial", Font.PLAIN, 12));
             g.drawString("Вверх: " + WorkArbitrage.getCountTasks(Direction.UP, i), Config.PADDING * 3, startY - 30);
             g.drawString("Вниз : " + WorkArbitrage.getCountTasks(Direction.DOWN, i), Config.PADDING * 3, startY - 5);

@@ -7,7 +7,7 @@ public class Main {
     private static final ArrayList<Elevator> elevators = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("Hello world!");
+        System.out.println("Welcome to the elevator simulation!");
         JFrame frame = new JFrame("Elevator Simulation");
         Render render = new Render(elevators);
         frame.add(render);
